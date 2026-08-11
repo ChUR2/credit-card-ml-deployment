@@ -5,6 +5,9 @@
 # Загрузка датасета с Kaggle
 kagglehub==1.0.2
 
+# Статистические тесты для анализа A/B (scripts/ab_test_analysis.py)
+scipy==1.15.3
+
 # Тесты
 pytest==8.4.2
 requests==2.32.5

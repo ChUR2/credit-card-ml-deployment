@@ -1,0 +1,88 @@
+{
+  "config": {
+    "traffic_split": 0.5,
+    "alpha": 0.05,
+    "bootstrap_iterations": 2000,
+    "economics": {
+      "LGD": 0.6,
+      "MARGIN": 0.08,
+      "review_cost": 300.0
+    }
+  },
+  "groups": {
+    "control_v1": {
+      "n": 2995,
+      "defaults": 629,
+      "f1": 0.4586,
+      "precision": 0.3577,
+      "recall": 0.6391,
+      "flagged_rate": 0.3753
+    },
+    "treatment_v2": {
+      "n": 3005,
+      "defaults": 698,
+      "f1": 0.5432,
+      "precision": 0.5,
+      "recall": 0.5946,
+      "flagged_rate": 0.2762
+    }
+  },
+  "tests": {
+    "f1_bootstrap": {
+      "diff": 0.0846,
+      "ci_95": [
+        0.0429,
+        0.1239
+      ],
+      "significant": true,
+      "p_value_bootstrap": 0.0
+    },
+    "recall_ztest": {
+      "control": 0.6391,
+      "treatment": 0.5946,
+      "diff": -0.0446,
+      "ci_95": [
+        -0.0969,
+        0.0077
+      ],
+      "z": -1.666,
+      "p_value": 0.095712,
+      "significant": false
+    },
+    "precision_ztest": {
+      "control": 0.3577,
+      "treatment": 0.5,
+      "diff": 0.1423,
+      "ci_95": [
+        0.0983,
+        0.1864
+      ],
+      "z": 6.306,
+      "p_value": 0.0,
+      "significant": true
+    }
+  },
+  "business": {
+    "avg_cost_per_client_control": 3277.01,
+    "avg_cost_per_client_treatment": 3434.58,
+    "diff_per_client": 157.56,
+    "diff_ci_95": [
+      -789.19,
+      1104.32
+    ],
+    "relative_change_pct": 4.81,
+    "t_stat": -0.326,
+    "p_value": 0.744295,
+    "significant": false,
+    "savings_per_100k_clients": -15756303.0
+  },
+  "sample_size_planning": {
+    "base_recall_v1": 0.6391,
+    "per_group_for_mde": {
+      "+0.03": 3946,
+      "+0.05": 1400,
+      "+0.10": 336
+    },
+    "comment": "Размер выборки считается по доле дефолтёров, а не по всему трафику"
+  }
+}

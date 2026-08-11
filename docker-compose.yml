@@ -23,7 +23,7 @@ services:
     ports:
       # Прямой доступ к сервису оставлен для отладки и демонстрации.
       # В реальном production этот порт наружу не публикуют — только через NGINX.
-      - "5000:5000"
+      - "5001:5000"
     healthcheck:
       test: ["CMD", "python", "-c",
              "import urllib.request,sys; sys.exit(0 if urllib.request.urlopen('http://localhost:5000/health', timeout=4).status==200 else 1)"]
