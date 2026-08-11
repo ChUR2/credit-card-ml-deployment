@@ -1,0 +1,28 @@
+# Данные (скачиваются скриптом, в репозиторий не коммитим)
+data/raw/*
+!data/raw/.gitkeep
+
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+.ipynb_checkpoints/
+.pytest_cache/
+*.egg-info/
+
+# Модели: model_v1.pkl и model_v2.pkl коммитим (требование к артефактам),
+# остальные веса игнорируем
+models/*.pkl
+!models/model_v1.pkl
+!models/model_v2.pkl
+
+# Логи
+logs/
+*.log
+
+# IDE / OS
+.idea/
+.vscode/
+.DS_Store

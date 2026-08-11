@@ -1,0 +1,28 @@
+# Данные не нужны в образе сервиса (инференс идёт по одному клиенту)
+data/
+
+# Артефакты разработки
+.git/
+.gitignore
+notebooks/
+reports/
+scripts/
+src/
+tests/
+docs/
+
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
+*.egg-info/
+
+# Документация и служебное
+*.md
+!README.md
+.DS_Store
+.idea/
+.vscode/
+logs/
+*.log

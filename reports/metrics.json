@@ -1,0 +1,18 @@
+{
+  "v1": {
+    "f1_default": 0.4649,
+    "precision_default": 0.3677,
+    "recall_default": 0.6323,
+    "roc_auc": 0.7106,
+    "pr_auc": 0.491,
+    "positive_rate": 0.3803
+  },
+  "v2": {
+    "f1_default": 0.5456,
+    "precision_default": 0.5009,
+    "recall_default": 0.5991,
+    "roc_auc": 0.7731,
+    "pr_auc": 0.5452,
+    "positive_rate": 0.2645
+  }
+}
