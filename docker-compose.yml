@@ -21,8 +21,8 @@ services:
       AB_TRAFFIC_SPLIT: "0.5"
       MAX_BATCH_SIZE: "1000"
     ports:
-      # Прямой доступ к сервису оставлен для отладки и демонстрации.
-      # В реальном production этот порт наружу не публикуют — только через NGINX.
+      # Прямой доступ к сервису оставлен для отладки и демонстрации
+      # В реальном production этот порт наружу не публикуют, только через NGINX
       - "5001:5000"
     healthcheck:
       test: ["CMD", "python", "-c",
@@ -34,8 +34,8 @@ services:
     networks:
       - ml_net
     logging:
-      # Ротация логов на стороне Docker: без неё JSON-логи растут без ограничений.
-      # В production вместо json-file ставят драйвер сборщика (gelf, fluentd).
+      # Ротация логов на стороне Docker: без неё JSON-логи растут без ограничений
+      # В production вместо json-file ставят драйвер сборщика (gelf, fluentd)
       driver: "json-file"
       options:
         max-size: "10m"
