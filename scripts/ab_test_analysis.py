@@ -6,10 +6,9 @@
 как это происходило бы в реальном тесте.
 
 Считает:
-  * технические метрики по группам (F1, Precision, Recall);
-  * статистическую значимость: z-тест для долей (Recall/Precision),
-    бутстреп-доверительный интервал для разницы F1;
-  * бизнес-метрику — ожидаемые потери банка в деньгах, t-тест Уэлча.
+   технические метрики по группам (F1, Precision, Recall);
+   статистическую значимость: z-тест для долей (Recall/Precision), бутстреп-доверительный интервал для разницы F1;
+   бизнес-метрику - ожидаемые потери банка в деньгах, t-тест Уэлча.
 
 Запуск из корня проекта:
     python scripts/ab_test_analysis.py
@@ -40,7 +39,7 @@ from src.config import (  # noqa: E402
 )
 from src.data import load_dataset, split_xy  # noqa: E402
 
-# ---------------------------------------------------------------- параметры
+# параметры
 
 AB_TRAFFIC_SPLIT = 0.5      # доля трафика на v2
 ALPHA = 0.05                # уровень значимости
@@ -53,18 +52,18 @@ MARGIN = 0.08
 REVIEW_COST = 300.0         # стоимость ручной проверки заявки, NT$
 
 
-# ---------------------------------------------------------------- утилиты
+# утилиты
 
 
 def assign_group(client_id, split: float = AB_TRAFFIC_SPLIT) -> str:
-    """Та же функция разбиения, что и в app/model_handler.py."""
+    "Та же функция разбиения, что и в app/model_handler.py."
     digest = hashlib.md5(str(client_id).encode()).hexdigest()
     bucket = int(digest[:8], 16) / 0xFFFFFFFF
     return "treatment" if bucket < split else "control"
 
 
 def two_proportion_ztest(succ_a: int, n_a: int, succ_b: int, n_b: int) -> dict:
-    """Двусторонний z-тест для разницы двух долей + ДИ (Вальд)."""
+    "Двусторонний z-тест для разницы двух долей + ДИ (Вальд)."
     p_a, p_b = succ_a / n_a, succ_b / n_b
     p_pool = (succ_a + succ_b) / (n_a + n_b)
     se_pool = np.sqrt(p_pool * (1 - p_pool) * (1 / n_a + 1 / n_b))
@@ -85,11 +84,7 @@ def two_proportion_ztest(succ_a: int, n_a: int, succ_b: int, n_b: int) -> dict:
 
 
 def bootstrap_f1_diff(y_c, pred_c, y_t, pred_t, rng) -> dict:
-    """Бутстреп-ДИ для разницы F1.
-
-    F1 — не доля, поэтому классический z-тест к нему неприменим:
-    у него нет простой аналитической ошибки. Ресемплируем группы независимо.
-    """
+    "Бутстреп-ДИ для разницы F1, ресемплируем группы независимо"
     diffs = np.empty(N_BOOTSTRAP)
     n_c, n_t = len(y_c), len(y_t)
     for i in range(N_BOOTSTRAP):
@@ -112,10 +107,10 @@ def bootstrap_f1_diff(y_c, pred_c, y_t, pred_t, rng) -> dict:
 def expected_cost(y_true, y_pred, exposure) -> np.ndarray:
     """Стоимость решения по каждому клиенту, NT$.
 
-    FN — выдали кредит будущему дефолтёру: теряем exposure * LGD.
-    FP — отказали платёжеспособному: упускаем маржу exposure * MARGIN.
-    TP — дефолт предотвращён, но заявка ушла на ручную проверку: REVIEW_COST.
-    TN — штатная выдача, стоимость решения нулевая.
+    FN — выдали кредит будущему дефолтёру: теряем exposure * LGD
+    FP — отказали платёжеспособному: упускаем маржу exposure * MARGIN
+    TP — дефолт предотвращён, но заявка ушла на ручную проверку: REVIEW_COST
+    TN — штатная выдача, стоимость решения нулевая
     """
     cost = np.zeros(len(y_true), dtype=float)
     fn = (y_true == 1) & (y_pred == 0)
@@ -129,7 +124,7 @@ def expected_cost(y_true, y_pred, exposure) -> np.ndarray:
 
 
 def required_sample_size(p_base: float, mde: float, alpha=ALPHA, power=0.8) -> int:
-    """Размер выборки на группу для z-теста долей (двусторонний)."""
+    "Размер выборки на группу для z-теста долей (двусторонний)."
     z_a = stats.norm.ppf(1 - alpha / 2)
     z_b = stats.norm.ppf(power)
     p_new = p_base + mde
@@ -140,7 +135,7 @@ def required_sample_size(p_base: float, mde: float, alpha=ALPHA, power=0.8) -> i
     return int(np.ceil(num / mde**2))
 
 
-# ---------------------------------------------------------------- основной сценарий
+# основной сценарий
 
 
 def main() -> None:
@@ -191,7 +186,7 @@ def main() -> None:
         "groups": {"control_v1": block(y_c, pred_c), "treatment_v2": block(y_t, pred_t)},
     }
 
-    # --- статистика
+    # статистика
     rng = np.random.default_rng(RANDOM_STATE)
     results["tests"] = {
         "f1_bootstrap": bootstrap_f1_diff(y_c, pred_c, y_t, pred_t, rng),
@@ -205,7 +200,7 @@ def main() -> None:
         ),
     }
 
-    # --- бизнес-метрика
+    # бизнес-метрика
     cost_c = expected_cost(y_c, pred_c, exp_c)
     cost_t = expected_cost(y_t, pred_t, exp_t)
     t_stat, p_cost = stats.ttest_ind(cost_c, cost_t, equal_var=False)
@@ -227,7 +222,7 @@ def main() -> None:
         "savings_per_100k_clients": round(float(-diff * 100_000), 0),
     }
 
-    # --- планирование выборки
+    # планирование выборки
     base_recall = results["groups"]["control_v1"]["recall"]
     results["sample_size_planning"] = {
         "base_recall_v1": base_recall,
