@@ -1,4 +1,4 @@
-"""Тесты API. Запуск из корня проекта: pytest -v"""
+"Тесты API. Запуск из корня проекта: pytest -v"
 from __future__ import annotations
 
 import json
