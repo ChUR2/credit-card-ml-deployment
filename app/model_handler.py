@@ -1,9 +1,3 @@
-"""Загрузка моделей и инференс.
-
-Модели хранятся как joblib-бандл: {'model': Pipeline, 'feature_columns': [...],
-'model_version': 'v1', 'threshold': 0.5, ...}. Порядок признаков берётся ИЗ БАНДЛА,
-а не из порядка ключей входного JSON — иначе можно молча получить неверные предсказания.
-"""
 from __future__ import annotations
 
 import hashlib
@@ -28,11 +22,11 @@ logger = logging.getLogger("credit_api")
 
 
 class ValidationError(ValueError):
-    """Некорректные входные данные (отдаём клиенту 400)."""
+    "Некорректные входные данные (отдаём клиенту 400)"
 
 
 class ModelRegistry:
-    """Реестр версий моделей. Загружает бандлы один раз при старте сервиса."""
+    "Реестр версий моделей. Загружает бандлы один раз при старте сервиса"
 
     def __init__(self, models_dir: Path = MODELS_DIR):
         self.models_dir = Path(models_dir)
@@ -95,16 +89,9 @@ class ModelRegistry:
             for v, b in self._bundles.items()
         }
 
-    # ---------- A/B-роутинг ----------
+    #  A/B-роутинг 
 
     def resolve_version(self, requested: str | None, client_id: str | None) -> tuple[str, str]:
-        """Возвращает (версия, способ выбора).
-
-        1. Явно указанная в запросе версия — приоритет (нужно для отладки и демо).
-        2. Иначе детерминированное разбиение по client_id: один и тот же клиент
-           всегда попадает в одну группу — иначе A/B-тест невалиден.
-        3. Если client_id нет — случайное распределение.
-        """
         if requested:
             requested = str(requested).lower()
             self.get(requested)  # проверка существования
@@ -121,7 +108,7 @@ class ModelRegistry:
 
         return (treatment if random.random() < AB_TRAFFIC_SPLIT else control), "random"
 
-    # ---------- инференс ----------
+    # инференс 
 
     def predict(self, payload: dict, version: str) -> dict:
         bundle = self.get(version)
@@ -142,7 +129,7 @@ class ModelRegistry:
 
 
 def risk_level(proba: float) -> str:
-    """Интерпретация вероятности для бизнес-пользователя."""
+    "Интерпретация вероятности для бизнес-пользователя"
     if proba < 0.2:
         return "low"
     if proba < 0.5:
@@ -151,7 +138,6 @@ def risk_level(proba: float) -> str:
 
 
 def validate_and_order(payload: dict, feature_columns: list[str] | None) -> pd.DataFrame:
-    """Проверяет входной JSON и приводит признаки к порядку, ожидаемому моделью."""
     if not isinstance(payload, dict):
         raise ValidationError("Тело запроса должно быть JSON-объектом")
 
