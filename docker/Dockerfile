@@ -1,24 +1,17 @@
-# syntax=docker/dockerfile:1
-#
-# Multi-stage сборка образа ML-сервиса.
-# Контекст сборки — КОРЕНЬ проекта:
-#   docker build -f docker/Dockerfile -t credit-default-api:1.0 .
-#
-# Зачем два стейджа: компиляторы и кеш pip нужны только на этапе установки
-# зависимостей. В финальный образ они не попадают — он меньше и безопаснее.
 
-# ---------- stage 1: сборка зависимостей ----------
+
+# сборка зависимостей
 FROM python:3.11-slim AS builder
 
 WORKDIR /build
 
-# Ставим зависимости в отдельный префикс, чтобы скопировать их одним слоем.
-# Только runtime-зависимости: pytest и kagglehub в образе не нужны.
+# Ставим зависимости в отдельный префикс, чтобы скопировать их одним слоем
+# Только runtime-зависимости
 COPY requirements-prod.txt .
 RUN pip install --no-cache-dir --prefix=/install -r requirements-prod.txt
 
 
-# ---------- stage 2: runtime ----------
+# runtime 
 FROM python:3.11-slim
 
 # PYTHONDONTWRITEBYTECODE — не плодим .pyc в контейнере
@@ -46,15 +39,12 @@ USER appuser
 
 EXPOSE 5000
 
-# Docker сам помечает контейнер unhealthy, если модели не загрузились.
-# urllib вместо curl — в slim-образе curl не установлен, а тянуть его ради
-# healthcheck значит раздувать образ.
 HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=3 \
     CMD python -c "import urllib.request,sys; \
     sys.exit(0 if urllib.request.urlopen('http://localhost:5000/health', timeout=4).status == 200 else 1)"
 
 # gunicorn вместо flask run: dev-сервер Flask однопоточный и не рассчитан
-# на production. 2 воркера x 4 потока — разумный старт для ML-инференса.
+# на production. 2 воркера x 4 потока
 CMD ["gunicorn", \
      "--bind", "0.0.0.0:5000", \
      "--workers", "2", \
