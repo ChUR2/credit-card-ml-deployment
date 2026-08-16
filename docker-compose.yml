@@ -1,11 +1,8 @@
-# Оркестрация: ML-сервис за reverse proxy NGINX.
-#
+# Оркестрация: ML-сервис за reverse proxy NGINX
 # Запуск:   docker compose up --build -d
 # Проверка: curl http://localhost/health          (через NGINX, порт 80)
 #           curl http://localhost:5000/health     (напрямую в сервис)
 # Остановка: docker compose down
-#
-# Ключ version: намеренно не указан — в Compose V2 он объявлен устаревшим.
 
 services:
   api:
