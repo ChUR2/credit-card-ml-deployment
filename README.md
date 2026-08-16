@@ -106,11 +106,11 @@ curl http://localhost:5001/health
 | Поле | Тип | Описание |
 |---|---|---|
 | `LIMIT_BAL` | number | Кредитный лимит, NT$ |
-| `SEX` | int | мужчина,женщина |
+| `SEX` | int | 1.мужчина, 2.женщина |
 | `EDUCATION` | int | 1.аспирантура, 2.университет, 3.школа, 4.другое |
 | `MARRIAGE`  | int | 1.женат/замужем, 2.холост, 3.другое |
 | `AGE` | int | Возраст, лет |
-| `PAY_0`, `PAY_2` … `PAY_6` | int | Статус платежа за последние 6 месяцев: 1. оплачено вовремя, 1…9 - просрочка в месяцах |
+| `PAY_0`, `PAY_2` … `PAY_6` | int | Статус платежа за последние 6 месяцев: -1.оплачено вовремя, 1…9 - просрочка в месяцах |
 | `BILL_AMT1` … `BILL_AMT6`  | number | Сумма счёта за 6 месяцев, NT$ |
 | `PAY_AMT1` … `PAY_AMT6`    | number | Сумма платежа за 6 месяцев, NT$ |
 
@@ -213,6 +213,19 @@ curl -X POST http://localhost:5001/predict \
 
 ---
 
+## Демонстрация работы API
+
+Скрипт прогоняет все типовые запросы (health, прогноз v1 и v2, A/B-роутинг, клиент с низким риском, батч, метаданные, две ошибки валидации) и сохраняет команды вместе с ответами в `docs/demo_output.md`:
+
+```bash
+bash scripts/demo_api.sh                    # сервис на http://localhost:5001
+bash scripts/demo_api.sh http://localhost   # через NGINX в compose
+```
+
+Готовый вывод: [docs/demo_output.md](docs/demo_output.md).
+
+---
+
 ## Демонстрация A/B-теста
 
 Сервис поднят - проверяем распределение трафика:
@@ -277,12 +290,12 @@ credit-card-ml-deployment/
 ├── scripts/
 │   ├── ab_test_analysis.py     # Статистический анализ A/B
 │   ├── ab_traffic_demo.py      # Демонстрация роутинга на живом сервисе
-│   └── make_synthetic_data.py  # Запасной генератор данных для отладки
 ├── tests/test_api.py           # 13 тестов API
 ├── docker/
 │   ├── Dockerfile              # Multi-stage, non-root, healthcheck
 │   └── nginx/nginx.conf        # Reverse proxy, rate limiting
 ├── examples/request_example.json
+├── docs/demo_output.md         # Примеры запросов с ответами
 ├── reports/                    # metrics.json, ab_test_results.json
 ├── data/raw/                   # Датасет (не коммитится, качается скриптом)
 ├── docker-compose.yml          # api + nginx
