@@ -1,5 +1,5 @@
-# Короткие команды для типовых операций.
-# Использование: make <цель>. Например: make docker-build
+# Короткие команды для типовых операций
+# Использование: make <цель> например make docker-build
 
 DOCKERHUB_USER ?= YOUR_DOCKERHUB_LOGIN
 IMAGE          ?= credit-default-api
