@@ -1,13 +1,4 @@
-"""Структурированное JSON-логирование.
 
-Логи пишутся в stdout одной строкой на событие — это стандарт для контейнеров
-(12-factor app): приложение не управляет ротацией файлов, а поток stdout
-забирает Docker и передаёт дальше в сборщик (Filebeat/Fluentd -> Elasticsearch -> Kibana).
-
-Пример строки лога:
-{"ts": "2026-08-11T09:12:33Z", "level": "INFO", "event": "prediction",
- "request_id": "...", "model_version": "v2", "prediction": 1, "latency_ms": 3.4}
-"""
 from __future__ import annotations
 
 import json
